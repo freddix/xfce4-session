@@ -1,0 +1,126 @@
+From 54002463867cdd01d5639e6a44f3bc74cd50f9ff Mon Sep 17 00:00:00 2001
+From: Nick Schermer <nick@xfce.org>
+Date: Fri, 04 May 2012 18:19:00 +0000
+Subject: Remove xfce environment functions and use glib.
+
+All the functions are provided by glib, except for
+xfce_putenv, which requires splitting the value
+for g_setenv.
+---
+diff --git a/xfce4-session/main.c b/xfce4-session/main.c
+index 82dc1d4..0a95714 100644
+--- a/xfce4-session/main.c
++++ b/xfce4-session/main.c
+@@ -99,14 +99,14 @@ setup_environment (void)
+     xfsm_enable_verbose ();
+ 
+   /* pass correct DISPLAY to children, in case of --display in argv */
+-  xfce_setenv ("DISPLAY", gdk_display_get_name (gdk_display_get_default ()), TRUE);
++  g_setenv ("DISPLAY", gdk_display_get_name (gdk_display_get_default ()), TRUE);
+ 
+   /* this is for compatibility with the GNOME Display Manager */
+   lang = g_getenv ("GDM_LANG");
+   if (lang != NULL && strlen (lang) > 0)
+     {
+-      xfce_setenv ("LANG", lang, TRUE);
+-      xfce_unsetenv ("GDM_LANG");
++      g_setenv ("LANG", lang, TRUE);
++      g_unsetenv ("GDM_LANG");
+     }
+ 
+   /* check access to $ICEAUTHORITY or $HOME/.ICEauthority if unset */
+diff --git a/xfce4-session/sm-layer.c b/xfce4-session/sm-layer.c
+index b71a986..313172f 100644
+--- a/xfce4-session/sm-layer.c
++++ b/xfce4-session/sm-layer.c
+@@ -140,7 +140,7 @@ sm_init (XfconfChannel *channel,
+   ice_setup_listeners (num_listeners, listen_objs, manager);
+ 
+   network_idlist = IceComposeNetworkIdList (num_listeners, listen_objs);
+-  xfce_setenv ("SESSION_MANAGER", network_idlist, TRUE);
++  g_setenv ("SESSION_MANAGER", network_idlist, TRUE);
+   free (network_idlist);
+ }
+ 
+diff --git a/xfce4-session/xfsm-compat-gnome.c b/xfce4-session/xfsm-compat-gnome.c
+index e1fa16f..d02df5a 100644
+--- a/xfce4-session/xfsm-compat-gnome.c
++++ b/xfce4-session/xfsm-compat-gnome.c
+@@ -92,15 +92,17 @@ child_setup (gpointer user_data)
+ static void
+ gnome_keyring_daemon_startup (void)
+ {
+-  GError *error = NULL;
+-  gchar  *sout;
+-  gchar **lines;
+-  gsize   lineno;
+-  gint    status;
+-  long    pid;
+-  gchar  *pid_str;
+-  gchar  *end;
+-  char *argv[3];
++  GError      *error = NULL;
++  gchar       *sout;
++  gchar      **lines;
++  gsize        lineno;
++  gint         status;
++  glong        pid;
++  gchar       *end;
++  gchar       *argv[3];
++  gchar       *p;
++  gchar       *name;
++  const gchar *value;
+ 
+   /* Pipe to slave keyring lifetime to */
+   if (pipe (keyring_lifetime_pipe))
+@@ -136,17 +138,23 @@ gnome_keyring_daemon_startup (void)
+ 
+           for (lineno = 0; lines[lineno] != NULL; lineno++)
+             {
+-              xfce_putenv (lines[lineno]);
++              p = strchr (lines[lineno], '=');
++              if (p == NULL)
++               continue;
+ 
+-              if (g_str_has_prefix (lines[lineno], "GNOME_KEYRING_PID="))
++              name = g_strndup (lines[lineno], p - lines[lineno]);
++              value = p + 1;
++
++              g_setenv (name, value, TRUE);
++
++              if (g_strcmp0 (name, "GNOME_KEYRING_PID") == 0)
+                 {
+-                  pid_str = lines[lineno] + strlen ("GNOME_KEYRING_PID=");
+-                  pid = strtol (pid_str, &end, 10);
+-                  if (end != pid_str)
+-                    {
+-                      gnome_keyring_daemon_pid = pid;
+-                    }
++                  pid = strtol (value, &end, 10);
++                  if (end != value)
++                    gnome_keyring_daemon_pid = pid;
+                 }
++
++              g_free (name);
+             }
+ 
+           g_strfreev (lines);
+diff --git a/xfce4-session/xfsm-shutdown.c b/xfce4-session/xfsm-shutdown.c
+index 30021af..d8757a8 100644
+--- a/xfce4-session/xfsm-shutdown.c
++++ b/xfce4-session/xfsm-shutdown.c
+@@ -269,9 +269,9 @@ xfsm_shutdown_sudo_init (XfsmShutdown  *shutdown,
+       signal (SIGPIPE, SIG_IGN);
+ 
+       /* setup environment */
+-      xfce_setenv ("LC_ALL", "C", TRUE);
+-      xfce_setenv ("LANG", "C", TRUE);
+-      xfce_setenv ("LANGUAGE", "C", TRUE);
++      g_setenv ("LC_ALL", "C", TRUE);
++      g_setenv ("LANG", "C", TRUE);
++      g_setenv ("LANGUAGE", "C", TRUE);
+ 
+       /* setup the 3 standard file handles */
+       dup2 (child_pipe[0], STDIN_FILENO);
+--
+cgit v0.9.0.3
