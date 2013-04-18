@@ -1,0 +1,59 @@
+From 6a1e12ffe71c2807e6d889b1520821afdb663320 Mon Sep 17 00:00:00 2001
+From: Nick Schermer <nick@xfce.org>
+Date: Sun, 06 Jan 2013 11:20:26 +0000
+Subject: Autotools updates.
+
+---
+diff --git a/Makefile.am b/Makefile.am
+index 7825ae1..082a0cb 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -32,10 +32,6 @@ DISTCLEANFILES =							\
+ 	intltool-update							\
+ 	$(desktop_DATA)
+ 
+-AUTOMAKE_OPTIONS =							\
+-	1.8								\
+-	dist-bzip2
+-
+ distclean-local:
+ 	rm -rf *.cache *~
+ 
+diff --git a/configure.in.in b/configure.ac.in
+index 134d0f7..46ff366 100644
+--- a/configure.in
++++ b/configure.ac
+@@ -27,8 +27,8 @@ AC_REVISION([$Id$])
+ AC_PROG_MAKE_SET()
+ 
+ dnl Initialize automake
+-AM_INIT_AUTOMAKE([AC_PACKAGE_TARNAME()], [AC_PACKAGE_VERSION()])
+-AM_CONFIG_HEADER([config.h])
++AM_INIT_AUTOMAKE([1.8 dist-bzip2 tar-ustar no-dist-gzip])
++AC_CONFIG_HEADERS([config.h])
+ AM_MAINTAINER_MODE()
+ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+ 
+diff --git a/libxfsm/Makefile.am b/libxfsm/Makefile.am
+index 92082dd..b219933 100644
+--- a/libxfsm/Makefile.am
++++ b/libxfsm/Makefile.am
+@@ -1,4 +1,4 @@
+-INCLUDES =								\
++AM_CPPFLAGS =								\
+ 	-I$(top_srcdir)
+ 
+ # common library
+diff --git a/xfce4-session/Makefile.am b/xfce4-session/Makefile.am
+index f748b2b..5472b33 100644
+--- a/xfce4-session/Makefile.am
++++ b/xfce4-session/Makefile.am
+@@ -1,5 +1,5 @@
+ 
+-INCLUDES =								\
++AM_CPPFLAGS =								\
+ 	-I$(top_builddir)						\
+ 	-I$(top_srcdir)							\
+ 	-DG_LOG_DOMAIN=\"xfce4-session\"				\
+--
+cgit v0.9.1
