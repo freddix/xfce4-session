@@ -2,17 +2,13 @@
 
 Summary:	Xfce session manager
 Name:		xfce4-session
-Version:	4.10.0
+Version:	4.10.1
 Release:	1
 License:	GPL v2
 Group:		X11/Applications
 Source0:	http://archive.xfce.org/src/xfce/xfce4-session/4.10/%{name}-%{version}.tar.bz2
-# Source0-md5:	4768e1a41a0287af6aad18b329a0f230
-Patch0:		499a719019e03da90b6901bb0f8a89d06ae167ee.patch
-Patch1:		54002463867cdd01d5639e6a44f3bc74cd50f9ff.patch
-Patch2:		7a75a8a0f7089b716e702e6bb0cf13fc3194e3db.patch
-Patch3:		9f3077be682355e1cd07e9a9463e76307292208c.patch
-Patch4:		%{name}-systemd.patch
+# Source0-md5:	1757657c1d590aa6274b7b7cbba33352
+Patch0:		alt-1bef8fd831eeabc9c60e3216b5ae1b4b61cb35a1.patch
 URL:		http://www.xfce.org/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -55,11 +51,7 @@ Header files for Xfce Session Manager library.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%patch0 -p2
 
 %build
 %{__intltoolize}
