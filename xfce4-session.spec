@@ -3,12 +3,13 @@
 Summary:	Xfce session manager
 Name:		xfce4-session
 Version:	4.10.1
-Release:	1
+Release:	2
 License:	GPL v2
 Group:		X11/Applications
 Source0:	http://archive.xfce.org/src/xfce/xfce4-session/4.10/%{name}-%{version}.tar.bz2
 # Source0-md5:	1757657c1d590aa6274b7b7cbba33352
 Patch0:		alt-1bef8fd831eeabc9c60e3216b5ae1b4b61cb35a1.patch
+Patch1:		%{name}-light-locker.patch
 URL:		http://www.xfce.org/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -28,7 +29,7 @@ Requires:	dbus-launch
 Requires:	systemd
 Requires:	xfconf
 Requires:	xorg-app-iceauth
-Suggests:	xscreensaver
+Suggests:	light-locker
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -52,6 +53,7 @@ Header files for Xfce Session Manager library.
 %prep
 %setup -q
 %patch0 -p2
+%patch1 -p1
 
 %build
 %{__intltoolize}
