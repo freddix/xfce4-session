@@ -1,13 +1,13 @@
-%define		xfce_version	4.10.0
+%define		xfce_version	4.11.0
 
 Summary:	Xfce session manager
 Name:		xfce4-session
-Version:	4.10.1
-Release:	2
+Version:	4.11.0
+Release:	1
 License:	GPL v2
 Group:		X11/Applications
-Source0:	http://archive.xfce.org/src/xfce/xfce4-session/4.10/%{name}-%{version}.tar.bz2
-# Source0-md5:	1757657c1d590aa6274b7b7cbba33352
+Source0:	http://archive.xfce.org/src/xfce/xfce4-session/4.11/%{name}-%{version}.tar.bz2
+# Source0-md5:	8ec8bcedcb9cc28afd345a907a0612c7
 Patch0:		alt-1bef8fd831eeabc9c60e3216b5ae1b4b61cb35a1.patch
 Patch1:		%{name}-light-locker.patch
 URL:		http://www.xfce.org/
@@ -21,7 +21,7 @@ BuildRequires:	libwnck2-devel
 BuildRequires:	libxfce4ui-devel >= %{xfce_version}
 BuildRequires:	pkg-config
 BuildRequires:	xfce4-dev-tools >= %{xfce_version}
-BuildRequires:	xfconf-devel >= %{xfce_version}
+BuildRequires:	xfconf-devel >= 4.10.0
 Requires(post,postun):	/usr/bin/gtk-update-icon-cache
 Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-libs = %{version}-%{release}
@@ -76,8 +76,8 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT	\
 	docdir="%{_datadir}/xfce4/help/%{name}"
 
-rm -rf $RPM_BUILD_ROOT%{_datadir}/locale/ur_PK
-rm -f $RPM_BUILD_ROOT%{_libdir}/xfce4/*/*/*.la
+%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/locale/ur_PK
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/{,xfce4/*/*/}*.la
 
 %find_lang %{name}
 
